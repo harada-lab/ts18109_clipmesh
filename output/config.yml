@@ -1,0 +1,72 @@
+aug_bkg: true
+aug_light: true
+aug_loc: true
+azim_max: 360.0
+azim_min: -360.0
+batch_size: 25
+blur_sigma: 3
+bsdf: diffuse
+channels: 4
+clip_model: ViT-B/32
+clip_weight: 1.0
+colab: false
+config: configs/single2.yml
+diff_loss_weight: 0.33
+diffusion_prior_cond_drop_prob: 0.1
+diffusion_prior_condition_on_text_encodings: false
+diffusion_prior_embed_dim: 512
+diffusion_prior_loss_type: l2
+diffusion_prior_network_depth: 12
+diffusion_prior_network_dim: 512
+diffusion_prior_network_dim_head: 64
+diffusion_prior_network_heads: 12
+diffusion_prior_network_normformer: false
+diffusion_prior_timesteps: 1000
+dist_max: 8.0
+dist_min: 5.0
+elev_alpha: 1.0
+elev_beta: 5.0
+elev_max: 60.0
+epochs: 5000
+fov_max: 90.0
+fov_min: 30.0
+gpu: '0'
+init_c: 0.85
+kernel_size: 7
+laplacian_min: 0.6
+laplacian_weight: 30.0
+layers: 2
+light_power: 5.0
+log_dist: 8.0
+log_elev: 30.0
+log_fov: 60.0
+log_interval: 5
+log_interval_im: 250
+log_light_power: 3.0
+log_res: 512
+lr: 0.01
+meshes:
+- primitives/sphere.obj
+offsets:
+- - 0.0
+  - 0.0
+  - 0.0
+output_path: ./output/
+path: ./output/
+prior_path: weights/model.pth
+resize_method: cubic
+scales:
+- 1.0
+seed: 99
+shape_imgs_frac: 0.5
+text_prompt: A wooden brown table
+texture_resolution: 512
+train_mesh_idx:
+- - verts
+  - texture
+  - normal
+  - true
+train_res: 256
+unit:
+- true
+video_log_interval: 20
