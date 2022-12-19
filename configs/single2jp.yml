@@ -1,0 +1,94 @@
+# Config to generate single meshes faster than paper config
+
+# Basic
+output_path: "/outputs/" # Where to save outputs 出力をどこのフォルダにするか
+gpu: '0'                 # Which GPU to use 何番目のGPUを使用するか(デフォルトは0)
+seed: 99                 # Seed for reproducibility 再現性を得る為のシード値
+
+# CLIP Related
+text_prompt: A wooden brown table                           # CLIP text prompt 出力するテキスト
+clip_model: ViT-B/16                        # Which CLIP Model to use see  available_models on OPENAI Clip repo どのCLIPモデルを使うか （OPENAI Clip Repoのavailable_modelsを参照）
+
+# Text-Image Prior Related　文字・画像先行関連
+prior_path:  weights/model.pth            # Path to weights for the prior network, not used if prior_path empty 事前ネットワークの重みへのパス（prior_pathが空の場合は使用しない。）
+# prior_path:                             # Leave empty like this to use only text prompt　テキストプロンプトのみを使用する場合は空欄
+
+## Parameters for diffusion prior network (code by lucidrains)　拡散先行ネットワークのパラメータ
+diffusion_prior_network_dim: 512
+diffusion_prior_network_depth: 12
+diffusion_prior_network_dim_head: 64
+diffusion_prior_network_heads: 12
+diffusion_prior_network_normformer: false
+
+## Parameters for diffusion prior (code by lucidrains)　拡散事前分布のパラメータ 
+diffusion_prior_embed_dim: 512
+diffusion_prior_timesteps: 1000
+diffusion_prior_cond_drop_prob: 0.1
+diffusion_prior_loss_type: l2
+diffusion_prior_condition_on_text_encodings: false
+
+# Parameters
+epochs: 5000             # Number of optimization steps(default 2000) 最適化ステップ数
+lr: 0.01                 # Maximum learning rate 最大学習率
+batch_size: 25           # How many images of shape are rendered at one epoch 1エポックに何枚の形状画像をレンダリングしているか
+train_res: 360           # Resolution of render before scaling to 224x224 224x224にスケーリングする前のレンダリングの解像度
+resize_method: cubic     # Method for resizing from cubic, linear, lanczos2, lanczos3 cubic, linear, lanczos2, lanczos3 からのリサイズ方法。
+bsdf: diffuse            # diffuse or pbr (diffuse recommended) diffuseまたはpbr（diffuse推奨）
+texture_resolution: 512  # Resolution of texture maps (ex: 512x512) テクスチャマップの解像度（例：512x512）
+channels: 4              # Texture map image channels (4 for alpha, 3 for RGB only) テクスチャーマップイメージチャンネル（アルファ4、RGBのみ3）
+init_c: 0.85             # Initial alpha channel value if channels == 4 アルファチャンネルの初期値 if channels == 4
+kernel_size: 7           # Kernel size for gaussian blurring of textures to reduce artifacts アーチファクトを低減するためのテクスチャのガウスぼかしのカーネルサイズ
+blur_sigma: 3            # Variance of gaussian kernel for blurring of textures テクスチャーのぼかしのためのガウシアンカーネルの分散値
+shape_imgs_frac: 0.5     # What % of epochs should the renders include plain shape renders as well as textures - after which only textured renders are done レンダリングにテクスチャだけでなく、プレーンなシェイプのレンダリングも含めるべきエポックは何％か。
+aug_light: true          # Augment the direction of light around the camera カメラ周辺の光の方向を補強
+aug_bkg: true            # Augment the background 背景を補強する
+diff_loss_weight: 0.33   # Weight of Diffusion prior loss   拡散先行ロスの重み 
+clip_weight: 1.0         # Weight of CLIP Text loss CLIPの重量 テキスト損失
+laplacian_weight: 30.0   # Initial uniform laplacian weight 初期の一様なラプラシアンの重み
+laplacian_min: 0.6       # Minimum uniform laplacian weight (set to 2% of max usually) 最小の一様なラプラシアン重み（通常、最大値の2％に設定される）
+layers: 2                # Number of layers to peel back for transparency 透明性を確保するために剥がす層数
+
+# Camera Parameters
+fov_min: 30.0            # Minimum camera field of view angle during renders レンダリング時のカメラ視野角の最小化 
+fov_max: 90.0            # Maximum camera field of view angle during renders レンダリング時のカメラ視野角の最大化 
+dist_min: 5.0            # Minimum distance of camera from mesh during renders レンダリング時のメッシュからのカメラの最小距離
+dist_max: 8.0            # Maximum distance of camera from mesh during renders レンダリング時のメッシュからのカメラの最大距離
+light_power: 5.0         # Light intensity 光量
+elev_alpha: 1.0          # Alpha parameter for Beta distribution for elevation sampling 標高サンプリングにおけるベータ分布のアルファパラメータ
+elev_beta: 5.0           # Beta parameter for Beta distribution for elevation sampling 標高サンプリングのベータ分布のベータパラメータ
+elev_max: 60.0           # Maximum elevation angle 最大仰角
+azim_min: -360.0         # Minimum azimuth angle 最小方位角
+azim_max: 360.0          # Maximum azimuth angle 最大方位角
+aug_loc: true            # Offset mesh from center of image? 画像の中心からメッシュを埋め合わせるかどうか
+
+# Logging Parameters
+log_interval: 500       # Interval for logging(default 5) ログ取得間隔
+log_interval_im: 1000    # Image logging interval 画像ログの取得間隔
+log_elev: 30.0           # Logging elevation angle ログの仰角
+log_fov: 60.0            # Logging field of view ログの視野
+log_dist: 8.0            # Logging distance from object 対象物からのロギング距離
+log_res: 512             # Logging render resolution レンダリング解像度を記録
+log_light_power: 3.0     # Light intensity for logging ロギング用光源
+colab: false             # Print logging image (only for Google Colab) ログアウトした画像を印刷する（Google Colabのみ）
+video_log_interval: 20
+# Mesh Parameters
+
+## Add meshes to the scene here ここでシーンにメッシュを追加
+meshes: 
+  - primitives/sphere.obj
+
+## Unit scale the meshes? メッシュをユニットスケールで表示する？
+unit: 
+  - true
+
+## What parameters to optimize for each mesh or none at all (vertices, texture map, normal map, true for random texture; false for using defined texture) ? メッシュごとに最適化するパラメータ、あるいは全く最適化しないパラメータ（頂点、テクスチャマップ、法線マップ、ランダムテクスチャの場合はtrue、定義済みテクスチャを使用する場合はfalse）
+train_mesh_idx:
+  - [verts, texture, normal, true]
+
+## Scale mesh size by some value メッシュサイズをある値で拡大縮小する
+scales:
+  - 1.0
+
+## After scaling (x, y, z) offset vertices (note that axis are +x, -y, +z) スケーリング後 (x, y, z) オフセット頂点 (軸は +x, -y, +z であることに注意)
+offsets:
+        - [0.0, 0.0,  0.0]
